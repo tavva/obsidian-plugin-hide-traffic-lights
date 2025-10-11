@@ -1,5 +1,6 @@
 .mise.toml
 .claude/
+claude-sandbox*
 
 # Compiled output
 main.js
