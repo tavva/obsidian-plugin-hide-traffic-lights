@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
   "description": "Hides macOS traffic light buttons for a distraction-free experience. Hover over the top-left corner to reveal them.",
-  "author": "Ben",
+  "author": "Ben Phillips",
   "authorUrl": "https://github.com/tavva",
   "isDesktopOnly": true
 }
