@@ -50,7 +50,7 @@ export default class HideTrafficLightsPlugin extends Plugin {
 		try {
 			const electron = require('electron');
 			const window = electron.remote.getCurrentWindow();
-			window.setTrafficLightPosition({ x: -100, y: -100 });
+			window.setWindowButtonPosition({ x: -100, y: -100 });
 		} catch (error) {
 			console.error('Failed to hide traffic lights:', error);
 		}
@@ -61,7 +61,7 @@ export default class HideTrafficLightsPlugin extends Plugin {
 			const electron = require('electron');
 			const window = electron.remote.getCurrentWindow();
 			// macOS default position
-			window.setTrafficLightPosition({ x: 10, y: 16 });
+			window.setWindowButtonPosition({ x: 10, y: 16 });
 		} catch (error) {
 			console.error('Failed to restore traffic lights:', error);
 		}
