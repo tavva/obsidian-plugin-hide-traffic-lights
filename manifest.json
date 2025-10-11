@@ -1,0 +1,10 @@
+{
+  "id": "hide-traffic-lights",
+  "name": "Hide Traffic Lights",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Hides macOS traffic light buttons for a distraction-free experience",
+  "author": "Ben",
+  "authorUrl": "",
+  "isDesktopOnly": true
+}

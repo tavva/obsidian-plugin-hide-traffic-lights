@@ -1,1 +1,16 @@
 .mise.toml
+
+# Compiled output
+main.js
+main.js.map
+*.js.map
+
+# Dependencies
+node_modules
+
+# Build files
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
