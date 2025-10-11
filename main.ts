@@ -34,6 +34,21 @@ export default class HideTrafficLightsPlugin extends Plugin {
 			this.register(() => {
 				window.removeEventListener('focus', this.hideTrafficLights.bind(this));
 			});
+
+			// Show on hover in top-left corner, hide when mouse leaves
+			const handleMouseMove = (e: MouseEvent) => {
+				// Show if mouse is in top-left 100x50px area
+				if (e.clientX < 100 && e.clientY < 50) {
+					this.restoreTrafficLights();
+				} else {
+					this.hideTrafficLights();
+				}
+			};
+
+			window.addEventListener('mousemove', handleMouseMove);
+			this.register(() => {
+				window.removeEventListener('mousemove', handleMouseMove);
+			});
 		}
 	}
 
