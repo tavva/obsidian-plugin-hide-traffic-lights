@@ -1,12 +1,39 @@
-import { Plugin, Platform } from 'obsidian';
+import { Plugin, Platform, debounce } from 'obsidian';
 
 export default class HideTrafficLightsPlugin extends Plugin {
+	private debouncedHide = debounce(
+		() => this.hideTrafficLights(),
+		50,
+		true
+	);
+
 	async onload() {
 		console.log('Loading Hide Traffic Lights plugin');
 
 		// Only run on macOS
 		if (Platform.isMacOS) {
+			// Initial hide
 			this.hideTrafficLights();
+
+			// Re-hide on layout changes (debounced to avoid excessive calls)
+			this.registerEvent(
+				this.app.workspace.on('layout-change', () => {
+					this.debouncedHide();
+				})
+			);
+
+			// Re-hide on window open (multi-window support)
+			this.registerEvent(
+				this.app.workspace.on('window-open', () => {
+					this.hideTrafficLights();
+				})
+			);
+
+			// Re-hide on window focus
+			window.addEventListener('focus', this.hideTrafficLights.bind(this));
+			this.register(() => {
+				window.removeEventListener('focus', this.hideTrafficLights.bind(this));
+			});
 		}
 	}
 
