@@ -6,10 +6,9 @@ export default class HideTrafficLightsPlugin extends Plugin {
 		50,
 		true
 	);
+	private trafficLightsVisible = false;
 
 	async onload() {
-		console.log('Loading Hide Traffic Lights plugin');
-
 		// Only run on macOS
 		if (Platform.isMacOS) {
 			// Initial hide
@@ -37,11 +36,15 @@ export default class HideTrafficLightsPlugin extends Plugin {
 
 			// Show on hover in top-left corner, hide when mouse leaves
 			const handleMouseMove = (e: MouseEvent) => {
-				// Show if mouse is in top-left 100x50px area
-				if (e.clientX < 100 && e.clientY < 50) {
+				const shouldBeVisible = e.clientX < 100 && e.clientY < 50;
+
+				// Only update if state changed
+				if (shouldBeVisible && !this.trafficLightsVisible) {
 					this.restoreTrafficLights();
-				} else {
+					this.trafficLightsVisible = true;
+				} else if (!shouldBeVisible && this.trafficLightsVisible) {
 					this.hideTrafficLights();
+					this.trafficLightsVisible = false;
 				}
 			};
 
@@ -53,8 +56,6 @@ export default class HideTrafficLightsPlugin extends Plugin {
 	}
 
 	async onunload() {
-		console.log('Unloading Hide Traffic Lights plugin');
-
 		// Restore traffic lights on macOS
 		if (Platform.isMacOS) {
 			this.restoreTrafficLights();
