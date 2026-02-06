@@ -29,10 +29,7 @@ export default class HideTrafficLightsPlugin extends Plugin {
 			);
 
 			// Re-hide on window focus
-			window.addEventListener('focus', this.hideTrafficLights.bind(this));
-			this.register(() => {
-				window.removeEventListener('focus', this.hideTrafficLights.bind(this));
-			});
+			this.registerDomEvent(window, 'focus', () => this.hideTrafficLights());
 
 			// Show on hover in top-left corner, hide when mouse leaves
 			const handleMouseMove = (e: MouseEvent) => {
@@ -48,10 +45,7 @@ export default class HideTrafficLightsPlugin extends Plugin {
 				}
 			};
 
-			window.addEventListener('mousemove', handleMouseMove);
-			this.register(() => {
-				window.removeEventListener('mousemove', handleMouseMove);
-			});
+			this.registerDomEvent(window, 'mousemove', handleMouseMove);
 		}
 	}
 
