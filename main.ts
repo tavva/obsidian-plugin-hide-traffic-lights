@@ -1,4 +1,5 @@
 import { Plugin, Platform, debounce } from 'obsidian';
+import { remote } from 'electron';
 
 export default class HideTrafficLightsPlugin extends Plugin {
 	private debouncedHide = debounce(
@@ -8,7 +9,7 @@ export default class HideTrafficLightsPlugin extends Plugin {
 	);
 	private trafficLightsVisible = false;
 
-	async onload() {
+	onload() {
 		// Only run on macOS
 		if (Platform.isMacOS) {
 			// Initial hide
@@ -49,7 +50,7 @@ export default class HideTrafficLightsPlugin extends Plugin {
 		}
 	}
 
-	async onunload() {
+	onunload() {
 		// Restore traffic lights on macOS
 		if (Platform.isMacOS) {
 			this.restoreTrafficLights();
@@ -58,9 +59,8 @@ export default class HideTrafficLightsPlugin extends Plugin {
 
 	private hideTrafficLights(): void {
 		try {
-			const electron = require('electron');
-			const window = electron.remote.getCurrentWindow();
-			window.setWindowButtonPosition({ x: -100, y: -100 });
+			const win = remote.getCurrentWindow();
+			win.setWindowButtonPosition({ x: -100, y: -100 });
 		} catch (error) {
 			console.error('Failed to hide traffic lights:', error);
 		}
@@ -68,10 +68,9 @@ export default class HideTrafficLightsPlugin extends Plugin {
 
 	private restoreTrafficLights(): void {
 		try {
-			const electron = require('electron');
-			const window = electron.remote.getCurrentWindow();
+			const win = remote.getCurrentWindow();
 			// macOS default position
-			window.setWindowButtonPosition({ x: 10, y: 16 });
+			win.setWindowButtonPosition({ x: 10, y: 16 });
 		} catch (error) {
 			console.error('Failed to restore traffic lights:', error);
 		}
