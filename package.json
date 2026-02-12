@@ -1,6 +1,6 @@
 {
   "name": "hide-traffic-lights",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hide macOS traffic lights in Obsidian",
   "main": "main.js",
   "scripts": {
