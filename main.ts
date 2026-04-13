@@ -1,76 +1,103 @@
-import { Plugin, Platform, debounce } from 'obsidian';
+import { Plugin, Platform, WorkspaceWindow, debounce } from 'obsidian';
 import { remote } from 'electron';
 
+interface WindowState {
+	trafficLightsVisible: boolean;
+}
+
 export default class HideTrafficLightsPlugin extends Plugin {
-	private debouncedHide = debounce(
-		() => this.hideTrafficLights(),
+	private debouncedHideAll = debounce(
+		() => this.hideAll(),
 		50,
 		true
 	);
-	private trafficLightsVisible = false;
+	private windowStates = new Map<Window, WindowState>();
 
 	onload() {
-		// Only run on macOS
-		if (Platform.isMacOS) {
-			// Initial hide
-			this.hideTrafficLights();
-
-			// Re-hide on layout changes (debounced to avoid excessive calls)
-			this.registerEvent(
-				this.app.workspace.on('layout-change', () => {
-					this.debouncedHide();
-				})
-			);
-
-			// Re-hide on window open (multi-window support)
-			this.registerEvent(
-				this.app.workspace.on('window-open', () => {
-					this.hideTrafficLights();
-				})
-			);
-
-			// Re-hide on window focus
-			this.registerDomEvent(window, 'focus', () => this.hideTrafficLights());
-
-			// Show on hover in top-left corner, hide when mouse leaves
-			const handleMouseMove = (e: MouseEvent) => {
-				const shouldBeVisible = e.clientX < 100 && e.clientY < 50;
-
-				// Only update if state changed
-				if (shouldBeVisible && !this.trafficLightsVisible) {
-					this.restoreTrafficLights();
-					this.trafficLightsVisible = true;
-				} else if (!shouldBeVisible && this.trafficLightsVisible) {
-					this.hideTrafficLights();
-					this.trafficLightsVisible = false;
-				}
-			};
-
-			this.registerDomEvent(window, 'mousemove', handleMouseMove);
+		if (!Platform.isMacOS) {
+			return;
 		}
+
+		this.setupWindow(window);
+
+		this.registerEvent(
+			this.app.workspace.on('layout-change', () => {
+				this.debouncedHideAll();
+			})
+		);
+
+		this.registerEvent(
+			this.app.workspace.on('window-open', (_ws: WorkspaceWindow, win: Window) => {
+				this.setupWindow(win);
+			})
+		);
+
+		this.registerEvent(
+			this.app.workspace.on('window-close', (_ws: WorkspaceWindow, win: Window) => {
+				this.windowStates.delete(win);
+			})
+		);
 	}
 
 	onunload() {
-		// Restore traffic lights on macOS
-		if (Platform.isMacOS) {
-			this.restoreTrafficLights();
+		if (!Platform.isMacOS) {
+			return;
+		}
+		for (const win of this.windowStates.keys()) {
+			this.restoreTrafficLights(win);
+		}
+		this.windowStates.clear();
+	}
+
+	private setupWindow(win: Window): void {
+		this.windowStates.set(win, { trafficLightsVisible: false });
+		this.hideTrafficLights(win);
+
+		this.registerDomEvent(win, 'focus', () => this.hideTrafficLights(win));
+
+		this.registerDomEvent(win, 'mousemove', (e: MouseEvent) => {
+			const state = this.windowStates.get(win);
+			if (!state) {
+				return;
+			}
+			const shouldBeVisible = e.clientX < 100 && e.clientY < 50;
+			if (shouldBeVisible && !state.trafficLightsVisible) {
+				this.restoreTrafficLights(win);
+				state.trafficLightsVisible = true;
+			} else if (!shouldBeVisible && state.trafficLightsVisible) {
+				this.hideTrafficLights(win);
+				state.trafficLightsVisible = false;
+			}
+		});
+	}
+
+	private hideAll(): void {
+		for (const win of this.windowStates.keys()) {
+			this.hideTrafficLights(win);
 		}
 	}
 
-	private hideTrafficLights(): void {
+	private getBrowserWindow(win: Window) {
+		if (win === window) {
+			return remote.getCurrentWindow();
+		}
+		const electron = (win as Window & { require?: NodeJS.Require }).require?.('electron') as typeof import('electron') | undefined;
+		return electron?.remote.getCurrentWindow();
+	}
+
+	private hideTrafficLights(win: Window): void {
 		try {
-			const win = remote.getCurrentWindow();
-			win.setWindowButtonPosition({ x: -100, y: -100 });
+			const browserWindow = this.getBrowserWindow(win);
+			browserWindow?.setWindowButtonPosition({ x: -100, y: -100 });
 		} catch (error) {
 			console.error('Failed to hide traffic lights:', error);
 		}
 	}
 
-	private restoreTrafficLights(): void {
+	private restoreTrafficLights(win: Window): void {
 		try {
-			const win = remote.getCurrentWindow();
-			// macOS default position
-			win.setWindowButtonPosition({ x: 10, y: 16 });
+			const browserWindow = this.getBrowserWindow(win);
+			browserWindow?.setWindowButtonPosition({ x: 10, y: 16 });
 		} catch (error) {
 			console.error('Failed to restore traffic lights:', error);
 		}
