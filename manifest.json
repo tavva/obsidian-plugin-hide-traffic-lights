@@ -1,7 +1,7 @@
 {
 	"id": "hide-traffic-lights",
 	"name": "Hide Traffic Lights",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "0.15.0",
 	"description": "Hides macOS traffic light buttons for a distraction-free experience. Hover over the top-left corner to reveal them.",
 	"author": "Ben Phillips",
