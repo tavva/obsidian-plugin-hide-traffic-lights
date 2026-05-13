@@ -51,7 +51,7 @@ npm run dev
 
 ## Support
 
-If you encounter issues, please report them on [GitHub Issues](https://github.com/yourusername/obsidian-plugin-hide-traffic-lights/issues).
+If you encounter issues, please report them on [GitHub Issues](https://github.com/tavva/obsidian-plugin-hide-traffic-lights/issues).
 
 ## License
 

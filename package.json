@@ -11,16 +11,8 @@
   "keywords": [],
   "author": "Ben",
   "license": "MIT",
-  "overrides": {
-    "@typescript-eslint/typescript-estree": {
-      "minimatch": "^9.0.7"
-    }
-  },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "@typescript-eslint/eslint-plugin": "^6.13.0",
-    "@typescript-eslint/parser": "^6.13.0",
-    "builtin-modules": "^3.3.0",
     "esbuild": "0.25.0",
     "obsidian": "latest",
     "tslib": "2.6.2",
