@@ -3,7 +3,8 @@
 
 declare module 'electron' {
 	interface BrowserWindow {
-		setWindowButtonPosition(position: { x: number; y: number }): void;
+		setWindowButtonVisibility(visible: boolean): void;
+		setWindowButtonPosition(position: { x: number; y: number } | null): void;
 	}
 
 	export const remote: {
